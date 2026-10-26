@@ -124,9 +124,21 @@ its other seven buttons have not been individually verified on the C3.
 - The library does not address individual lamps, receive commands, or confirm
   lamp state.
 
-Use the library only with devices you own or are authorized to control.
-Measure the RF output and follow applicable local radio rules before adding
-an antenna or extending its range.
+## Responsible use and legal notice
+
+This project is provided for education and authorized testing. It is not a
+certified radio transmitter, and its emissions have not been measured for
+regulatory compliance.
+
+Anyone who builds or operates a device using this software is responsible for
+checking the radio rules that apply in their location, using only equipment
+they are authorized to control, and preventing harmful interference. Do not
+transmit on a frequency or at a power level you are not authorized to use.
+
+The software is provided "as is" under the MIT License. To the extent permitted
+by applicable law, the authors and contributors disclaim warranties and
+liability for its use or misuse, including interference, damage, and regulatory
+violations.
 
 ## License
 
