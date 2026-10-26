@@ -44,6 +44,8 @@ For PlatformIO, open `examples/VevorSolarLamp` as a project, select `esp32`,
 `esp32c3`, or `esp32s3` from its `platformio.ini`, and build. It references
 this library through `lib_extra_dirs = ../..`; the example itself uses only
 `#include <Gpio315Ook.h>` and `radio.send(...)` for transmission.
+The example pins PlatformIO's Espressif platform to 6.12.0, matching the
+Arduino ESP32 core used for the confirmed local builds and C3 lamp test.
 
 Basic library use:
 
