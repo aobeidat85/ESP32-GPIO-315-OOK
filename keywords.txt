@@ -1,0 +1,4 @@
+Gpio315Ook	KEYWORD1
+begin	KEYWORD2
+send	KEYWORD2
+ready	KEYWORD2
