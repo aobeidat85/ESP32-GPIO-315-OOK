@@ -5,6 +5,10 @@ clock harmonic from an ESP32 GPIO pin. It needs no separate RF transmitter
 module. The output is experimental: it is not a calibrated or filtered radio
 transmitter, and the GPIO clock produces other harmonics.
 
+**OOK** means **On-Off Keying**. Data is sent by switching a radio carrier on
+and off in timed pulses. Here, the ESP32 turns a GPIO clock on and off to
+encode each bit of the remote command.
+
 ## Why this project exists
 
 The user's VEVOR lights all respond to the same handheld remote. Their
@@ -75,9 +79,10 @@ was not measured in this project.
 
 The [VEVOR RBTYNLD-002 solar street light](https://www.vevor.com/solar-street-light-c_11583/vevor-8000w-solar-street-lights-outdoor-450000lm-commercial-parking-lot-lights-dusk-to-dawn-led-flood-security-lamp-with-motion-sensor-ip65-waterproof-outdoor-lighting-for-driveway-yard-3-pack-p_010321461696)
 is listed with an RF remote, motion sensing, timer settings, and adjustable
-brightness. The codes below were **captured from one user's remote**, then
-replayed through a CC1101 at a 315.00 MHz receiver setting. They are not
-manufacturer-supplied universal codes; another remote may have different
+brightness. The codes below were **captured from one user's remote using a
+CC1101 as a receiver**, tuned to 315.00 MHz. The CC1101 was used only for
+capture; the ESP32 GPIO generates the transmissions in this project. These
+are not manufacturer-supplied universal codes; another remote may have different
 codes or even a different protocol.
 
 | Key | Remote button | Code |
@@ -91,11 +96,12 @@ codes or even a different protocol.
 | `8` | + | `0x3AB603` |
 | `9` | − | `0x3AB60A` |
 
-All eight codes worked in the earlier CC1101 replay tests. The ESP32-C3 GPIO9
-path has been confirmed for ON/OFF, including one lamp toggle from this
+All eight codes were captured from the remote. The ESP32-C3 GPIO9 path has
+been confirmed for ON/OFF, including one lamp toggle from this
 library's example after flashing it to the C3. The other seven C3 buttons
-have not yet been individually checked. The `315.00 MHz` CC1101 setting was successful but
-was not a precision measurement of the original remote's carrier.
+have not yet been individually checked. The `315.00 MHz` CC1101 receiver
+setting worked for capture but was not a precision measurement of the
+original remote's carrier.
 
 Use only with devices you own or are authorized to control. A GPIO harmonic
 can radiate unwanted frequencies; measure the output and follow local radio
