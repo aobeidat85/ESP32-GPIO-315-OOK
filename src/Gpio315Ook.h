@@ -21,5 +21,6 @@ public:
 private:
   void carrier(bool on);
   void pulse(uint32_t highUs, uint32_t lowUs);
+  bool setClockEnabled(bool enabled);
   bool ready_ = false;
 };

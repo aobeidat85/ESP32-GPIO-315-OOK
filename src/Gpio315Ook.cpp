@@ -56,6 +56,28 @@ void Gpio315Ook::pulse(uint32_t highUs, uint32_t lowUs) {
   delayMicroseconds(lowUs);
 }
 
+bool Gpio315Ook::setClockEnabled(bool enabled) {
+#if CONFIG_IDF_TARGET_ESP32C3
+  if (enabled) {
+    REG_SET_BIT(I2S_TX_CLKM_CONF_REG(0), I2S_CLK_EN);
+    REG_SET_BIT(I2S_TX_CLKM_CONF_REG(0), I2S_TX_CLK_ACTIVE);
+    REG_SET_BIT(I2S_TX_CONF_REG(0), I2S_TX_UPDATE);
+    for (int i = 0; i < 10000; ++i) {
+      if (!(REG_READ(I2S_TX_CONF_REG(0)) & I2S_TX_UPDATE)) return true;
+      delayMicroseconds(1);
+    }
+    return false;
+  }
+  // Leave GPIO on its low software output before removing the clock.
+  carrier(false);
+  REG_CLR_BIT(I2S_TX_CLKM_CONF_REG(0), I2S_TX_CLK_ACTIVE);
+  REG_CLR_BIT(I2S_TX_CLKM_CONF_REG(0), I2S_CLK_EN);
+#else
+  (void)enabled;
+#endif
+  return true;
+}
+
 bool Gpio315Ook::begin() {
 #if CONFIG_IDF_TARGET_ESP32
   constexpr gpio_num_t output = GPIO_NUM_0;
@@ -120,6 +142,9 @@ bool Gpio315Ook::begin() {
   }
   carrier(false);
   if (!updated) return false;
+#if CONFIG_IDF_TARGET_ESP32C3
+  setClockEnabled(false);
+#endif
 #else
   return false;
 #endif
@@ -131,6 +156,12 @@ bool Gpio315Ook::send(uint32_t code, uint8_t bits, uint16_t pulseUs,
                       uint8_t repeats) {
   if (!ready_ || bits < 1 || bits > 32 || pulseUs < 100 ||
       pulseUs > 2000 || repeats < 1 || repeats > 32) return false;
+#if CONFIG_IDF_TARGET_ESP32C3
+  if (!setClockEnabled(true)) {
+    setClockEnabled(false);
+    return false;
+  }
+#endif
   for (uint8_t repeat = 0; repeat < repeats; ++repeat) {
     for (int bit = bits - 1; bit >= 0; --bit) {
       const bool one = (code >> bit) & 1U;
@@ -139,5 +170,8 @@ bool Gpio315Ook::send(uint32_t code, uint8_t bits, uint16_t pulseUs,
     pulse(pulseUs, 31UL * pulseUs);
   }
   carrier(false);
+#if CONFIG_IDF_TARGET_ESP32C3
+  setClockEnabled(false);
+#endif
   return true;
 }
